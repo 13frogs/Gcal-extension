@@ -32,4 +32,4 @@ document.getElementById("load").onclick = async () => {
     }
 
     document.getElementById("results").innerHTML = html;
-};
+});
