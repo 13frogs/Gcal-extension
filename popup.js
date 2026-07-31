@@ -1,35 +1,69 @@
-document.getElementById("load").onclick = async () => {
+document.getElementById("load").addEventListener("click", async () => {
 
-    const token = await getToken();
+    console.log("Load Calendar clicked");
 
-    const data = await getCalendarEvents(token);
+    try {
 
-    let totals = {};
+        const data = await chrome.storage.local.get("token");
 
-    data.items.forEach(event => {
+        console.log("Token:", data.token);
 
-        if (!event.start.dateTime || !event.end.dateTime)
+
+        if (!data.token) {
+
+            document.getElementById("results").innerHTML =
+            "No Google token. Click Sign In first.";
+
             return;
+        }
 
-        let hours =
-            (new Date(event.end.dateTime) -
-             new Date(event.start.dateTime))
-             / 3600000;
 
-        let title = event.summary || "Other";
+        console.log("Requesting calendar...");
 
-        if (!(title in totals))
-            totals[title] = 0;
+        const calendar = await loadCalendarEvents(data.token);
 
-        totals[title] += hours;
-    });
 
-    let html = "";
+        console.log("Calendar response:", calendar);
 
-    for (let cls in totals) {
 
-        html += `<p>${cls}: ${totals[cls].toFixed(2)} hrs</p>`;
+        if (!calendar.items) {
+
+            throw new Error("No calendar events returned");
+
+        }
+
+
+        const totals = calculateHours(calendar.items);
+
+
+        console.log("Totals:", totals);
+
+
+        let html = "<table>";
+
+        for (let course in totals) {
+
+            html += `
+            <tr>
+            <td>${course}</td>
+            <td>${totals[course].toFixed(2)} hrs</td>
+            </tr>
+            `;
+
+        }
+
+        html += "</table>";
+
+        document.getElementById("results").innerHTML = html;
+
+
+    } catch(error) {
+
+        console.error("ERROR:", error);
+
+        document.getElementById("results").innerHTML =
+        "Error: " + error.message;
+
     }
 
-    document.getElementById("results").innerHTML = html;
-};
+});
