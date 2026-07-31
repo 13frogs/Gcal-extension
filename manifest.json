@@ -1,8 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Class Hour Tracker",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Tracks hours spent on classes using Google Calendar.",
+  "icons": {
+    "128": "images/icon-128.png"
+  },
   "permissions": [
     "identity",
     "storage"
@@ -12,9 +15,7 @@
   ],
   "oauth2": {
     "client_id": "YOUR_CLIENT_ID.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/calendar.readonly"
-    ]
+    "scopes": ["https://www.googleapis.com/auth/calendar.readonly"]
   },
   "background": {
     "service_worker": "background.js"
